@@ -1,0 +1,422 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ENSAKH - Tableau de Bord Administrateur{% endblock %}
+
+{% block content %}
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-graduation-cap"></i>ENSAKH</h3>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="{% url 'dashboard' %}" class="active"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="{% url 'gestion_modules' %}"><i class="fas fa-book"></i> Gestion des modules</a></li>
+                <li><a href="{% url 'filieres' %}"><i class="fas fa-layer-group"></i> Filières & Niveaux</a></li>
+                <li><a href="{% url 'statistiques' %}"><i class="fas fa-chart-bar"></i> Statistiques</a></li>
+                <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h4>Tableau de Bord Administrateur</h4>
+            <div class="user-info">
+                <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:'Admin' }}&background=3b82f6&color=fff" alt="User">
+                <span>{{ user.get_full_name|default:'Administrateur' }}</span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-users"></i>
+                    <h3>{{ stats.total_etudiants }}</h3>
+                    <p>Étudiants</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <h3>{{ stats.total_enseignants }}</h3>
+                    <p>Enseignants</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-book"></i>
+                    <h3>{{ stats.total_modules }}</h3>
+                    <p>Modules</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-layer-group"></i>
+                    <h3>{{ stats.total_filieres }}</h3>
+                    <p>Filières</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Activité récente</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Répartition par filière</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="departmentsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Derniers utilisateurs ajoutés</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Email</th>
+                                        <th>Rôle</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for etudiant in derniers_etudiants %}
+                                    <tr>
+                                        <td>{{ etudiant.nom_complet }}</td>
+                                        <td>{{ etudiant.user.email }}</td>
+                                        <td><span class="badge badge-primary">Étudiant</span></td>
+                                        <td>{{ etudiant.created_at|date:"d/m/Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% for enseignant in derniers_enseignants %}
+                                    <tr>
+                                        <td>{{ enseignant.nom_complet }}</td>
+                                        <td>{{ enseignant.user.email }}</td>
+                                        <td><span class="badge badge-success">Professeur</span></td>
+                                        <td>{{ enseignant.created_at|date:"d/m/Y" }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Alertes système</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Message</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for alerte in alertes %}
+                                    <tr>
+                                        <td>
+                                            {% if alerte.type_alerte == 'WARNING' %}
+                                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                                            {% elif alerte.type_alerte == 'INFO' %}
+                                                <i class="fas fa-info-circle text-primary"></i>
+                                            {% elif alerte.type_alerte == 'SUCCESS' %}
+                                                <i class="fas fa-check-circle text-success"></i>
+                                            {% else %}
+                                                <i class="fas fa-times-circle text-danger"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ alerte.message }}</td>
+                                        <td>{{ alerte.created_at|date:"d/m/Y" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">Aucune alerte</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced AI Chatbot Container -->
+    <div class="chatbot-container">
+        <div class="chatbot-header" id="chatbotToggle">
+            <div>
+                <span>🤖 Assistant ENSAKH IA</span>
+                <span class="status-indicator" id="statusIndicator">● En ligne</span>
+            </div>
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="chatbot-body" id="chatbotBody">
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="message bot-message">
+                    <div class="message-avatar bot-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        Bonjour! Je suis l'assistant IA de l'ENSAKH. Je peux vous aider avec des informations détaillées sur les étudiants, enseignants, modules, filières et bien plus encore. Comment puis-je vous assister aujourd'hui?
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="userInput" placeholder="Posez votre question..." autocomplete="off">
+                <button id="sendButton" disabled>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Données des graphiques depuis Django
+    const chartData = {{ chart_data|safe }};
+    const filiereStats = {{ filieres_stats|safe }};
+
+    // Activity Chart
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    const activityChart = new Chart(activityCtx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [
+                {
+                    label: 'Connexions',
+                    data: chartData.connexions,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Nouveaux comptes',
+                    data: chartData.nouveaux_comptes,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Departments Chart
+    const deptCtx = document.getElementById('departmentsChart').getContext('2d');
+    const deptChart = new Chart(deptCtx, {
+        type: 'pie',
+        data: {
+            labels: filiereStats.map(f => f.code),
+            datasets: [{
+                data: filiereStats.map(f => f.nb_etudiants),
+                backgroundColor: [
+                    '#3b82f6',
+                    '#10b981',
+                    '#f59e0b',
+                    '#8b5cf6',
+                    '#ec4899',
+                    '#64748b'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Enhanced AI Chatbot functionality
+    $(document).ready(function() {
+        const chatbotBody = $('#chatbotBody');
+        const chatbotToggle = $('#chatbotToggle');
+        const chatbotMessages = $('#chatbotMessages');
+        const userInput = $('#userInput');
+        const sendButton = $('#sendButton');
+        const statusIndicator = $('#statusIndicator');
+
+        let isTyping = false;
+
+        // Toggle chatbot visibility
+        chatbotToggle.click(function() {
+            chatbotBody.slideToggle(300);
+        });
+
+        // Enable/disable send button based on input
+        userInput.on('input', function() {
+            const hasText = $(this).val().trim().length > 0;
+            sendButton.prop('disabled', !hasText || isTyping);
+        });
+
+        // Send message function
+        async function sendMessage() {
+            const message = userInput.val().trim();
+            if (message !== '' && !isTyping) {
+                // Add user message
+                addMessage(message, 'user');
+                userInput.val('');
+                sendButton.prop('disabled', true);
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                try {
+                    // Get AI response from Django API
+                    const response = await fetch('/api/chatbot/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ message: message })
+                    });
+                    
+                    const data = await response.json();
+                    hideTypingIndicator();
+                    
+                    if (response.ok) {
+                        addMessage(data.response, 'bot');
+                    } else {
+                        addMessage("Désolé, je rencontre un problème technique. Veuillez réessayer dans un moment.", 'bot');
+                    }
+                } catch (error) {
+                    hideTypingIndicator();
+                    addMessage("Erreur de connexion. Veuillez vérifier votre connexion internet.", 'bot');
+                    console.error('Chatbot error:', error);
+                }
+            }
+        }
+
+        // Add message to chat
+        function addMessage(message, sender) {
+            const messageDiv = $('<div class="message"></div>');
+            messageDiv.addClass(sender === 'bot' ? 'bot-message' : 'user-message');
+            
+            const avatarDiv = $('<div class="message-avatar"></div>');
+            avatarDiv.addClass(sender === 'bot' ? 'bot-avatar' : 'user-avatar');
+            
+            if (sender === 'bot') {
+                avatarDiv.html('<i class="fas fa-robot"></i>');
+            } else {
+                avatarDiv.html('<i class="fas fa-user"></i>');
+            }
+            
+            const contentDiv = $('<div class="message-content"></div>');
+            contentDiv.html(message.replace(/\n/g, '<br>'));
+            
+            messageDiv.append(avatarDiv);
+            messageDiv.append(contentDiv);
+            chatbotMessages.append(messageDiv);
+            
+            // Scroll to bottom
+            chatbotMessages.scrollTop(chatbotMessages[0].scrollHeight);
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            isTyping = true;
+            statusIndicator.text('● En train d\'écrire...');
+            
+            const typingDiv = $('<div class="message bot-message" id="typingIndicator"></div>');
+            const avatarDiv = $('<div class="message-avatar bot-avatar"><i class="fas fa-robot"></i></div>');
+            const indicatorDiv = $('<div class="typing-indicator"><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>');
+            
+            typingDiv.append(avatarDiv);
+            typingDiv.append(indicatorDiv);
+            chatbotMessages.append(typingDiv);
+            chatbotMessages.scrollTop(chatbotMessages[0].scrollHeight);
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            isTyping = false;
+            statusIndicator.text('● En ligne');
+            $('#typingIndicator').remove();
+            sendButton.prop('disabled', userInput.val().trim().length === 0);
+        }
+
+        // Send message on button click
+        sendButton.click(sendMessage);
+
+        // Send message on Enter key
+        userInput.keypress(function(e) {
+            if (e.which === 13 && !isTyping) {
+                sendMessage();
+            }
+        });
+
+        // Initialize
+        sendButton.prop('disabled', true);
+    });
+
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENSAKH - Filières & Niveaux</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary-color: #64748b;
+            --light-gray: #f8fafc;
+            --sidebar-width: 250px;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-header h3 i {
+            margin-right: 10px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li a {
+            display: block;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 3px solid white;
+        }
+
+        .sidebar-menu li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 15px 15px 0 0 !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .filiere-card {
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filiere-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30px, -30px);
+        }
+
+        .filiere-card h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .filiere-card p {
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .filiere-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .filiere-stats div {
+            text-align: center;
+        }
+
+        .filiere-stats div h6 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .filiere-stats div small {
+            opacity: 0.8;
+        }
+
+        .level-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s;
+        }
+
+        .level-card:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .level-header h6 {
+            margin: 0;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .level-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .level-stat {
+            text-align: center;
+            padding: 10px;
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .level-stat h6 {
+            margin: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .level-stat small {
+            color: var(--secondary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 8px;
+            padding: 6px 12px;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .tabs-container {
+            margin-bottom: 30px;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            padding: 12px 20px;
+            color: var(--secondary-color);
+            font-weight: 500;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .tab-content {
+            padding: 20px 0;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            padding: 10px 15px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+
+        .modal-content {
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -250px;
+            }
+            .sidebar.active {
+                margin-left: 0;
+            }
+            .main-content {
+                width: 100%;
+                margin-left: 0;
+            }
+            .main-content.active {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+            .filiere-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-graduation-cap"></i>ENSAKH</h3>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="#"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="#"><i class="fas fa-book"></i> Gestion des modules</a></li>
+                <li><a href="#" class="active"><i class="fas fa-layer-group"></i> Filières & Niveaux</a></li>
+                <li><a href="#"><i class="fas fa-chart-bar"></i> Statistiques</a></li>
+                <li><a href="#"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h4>Gestion des Filières & Niveaux</h4>
+            <div class="user-info">
+                <img src="https://ui-avatars.com/api/?name=Admin+Demo&background=3b82f6&color=fff" alt="User">
+                <span>Administrateur Demo</span>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="filieres-tab" data-toggle="tab" href="#filieres" role="tab">
+                        <i class="fas fa-layer-group"></i> Filières
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="niveaux-tab" data-toggle="tab" href="#niveaux" role="tab">
+                        <i class="fas fa-stairs"></i> Niveaux
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="myTabContent">
+            <!-- Filières Tab -->
+            <div class="tab-pane fade show active" id="filieres" role="tabpanel">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h5>Toutes les Filières ({{ filieres.count }})</h5>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#addFiliereModal">
+                            <i class="fas fa-plus"></i> Ajouter Filière
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    {% for filiere in filieres %}
+                    <div class="col-md-6">
+                        <div class="filiere-card" style="{{ filiere.gradient_style }}">
+                            <h4>{{ filiere.nom }}</h4>
+                            <p>{{ filiere.description|truncatewords:15 }}</p>
+                            <div class="filiere-stats">
+                                <div>
+                                    <h6>{{ filiere.nb_etudiants }}</h6>
+                                    <small>Étudiants</small>
+                                </div>
+                                <div>
+                                    <h6>{{ filiere.nb_modules }}</h6>
+                                    <small>Modules</small>
+                                </div>
+                                <div>
+                                    <h6>{{ filiere.nb_enseignants }}</h6>
+                                    <small>Enseignants</small>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-outline-light btn-sm" onclick="supprimerFiliere({{ filiere.id }})">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> Aucune filière trouvée. Ajoutez votre première filière !
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Niveaux Tab -->
+            <div class="tab-pane fade" id="niveaux" role="tabpanel">
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <h5>Gestion des Niveaux ({{ niveaux.count }})</h5>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#addNiveauModal">
+                            <i class="fas fa-plus"></i> Ajouter Niveau
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    {% for niveau in niveaux %}
+                    <div class="col-md-6">
+                        <div class="level-card">
+                            <div class="level-header">
+                                <h6><i class="fas fa-graduation-cap"></i> {{ niveau.nom }}</h6>
+                                <div class="action-buttons">
+                                    <button class="btn btn-outline-danger btn-sm" onclick="supprimerNiveau({{ niveau.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="level-info">
+                                <div class="level-stat">
+                                    <h6>{{ niveau.semestre1 }}</h6>
+                                    <small>Semestre 1</small>
+                                </div>
+                                <div class="level-stat">
+                                    <h6>{{ niveau.semestre2 }}</h6>
+                                    <small>Semestre 2</small>
+                                </div>
+                                <div class="level-stat">
+                                    <h6>{{ niveau.nb_etudiants }}</h6>
+                                    <small>Étudiants</small>
+                                </div>
+                                <div class="level-stat">
+                                    <h6>{{ niveau.nb_modules }}</h6>
+                                    <small>Modules</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> Aucun niveau trouvé. Ajoutez votre premier niveau !
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Filière Modal -->
+    <div class="modal fade" id="addFiliereModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter une Nouvelle Filière</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addFiliereForm">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Nom de la Filière</label>
+                                    <input type="text" name="nom" class="form-control" placeholder="Ex: Génie Logiciel" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Code Filière</label>
+                                    <input type="text" name="code" class="form-control" placeholder="Ex: GL" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Responsable de Filière</label>
+                                    <input type="text" name="responsable" class="form-control" placeholder="Prof. Ahmed Bennani" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Couleur Primaire</label>
+                                    <input type="color" name="couleur_primaire" class="form-control" value="#667eea">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Description de la filière..." required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Durée (années)</label>
+                                    <select name="duree_annees" class="form-control" required>
+                                        <option value="3">3 ans</option>
+                                        <option value="4">4 ans</option>
+                                        <option value="5">5 ans</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Capacité Max</label>
+                                    <input type="number" name="capacite_max" class="form-control" placeholder="Ex: 40" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Statut</label>
+                                    <select name="statut" class="form-control" required>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="ajouterFiliere()">Ajouter Filière</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Niveau Modal -->
+    <div class="modal fade" id="addNiveauModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter un Nouveau Niveau</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addNiveauForm">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Nom du Niveau</label>
+                            <input type="text" name="nom" class="form-control" placeholder="Ex: Cinquième Année" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Code Niveau</label>
+                                    <input type="text" name="code" class="form-control" placeholder="Ex: 5A" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Ordre</label>
+                                    <input type="number" name="ordre" class="form-control" placeholder="Ex: 5" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Semestres</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" name="semestre1" class="form-control" placeholder="Semestre 9" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="semestre2" class="form-control" placeholder="Semestre 10" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" class="form-control" rows="2" placeholder="Description du niveau..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" onclick="ajouterNiveau()">Ajouter Niveau</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Fonction pour obtenir le token CSRF
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Ajouter une filière
+        function ajouterFiliere() {
+            const form = document.getElementById('addFiliereForm');
+            const formData = new FormData(form);
+            
+            fetch('{% url "ajouter_filiere" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erreur lors de l\'ajout de la filière');
+            });
+        }
+
+        // Ajouter un niveau
+        function ajouterNiveau() {
+            const form = document.getElementById('addNiveauForm');
+            const formData = new FormData(form);
+            
+            fetch('{% url "ajouter_niveau" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    location.reload();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Erreur lors de l\'ajout du niveau');
+            });
+        }
+
+        // Supprimer une filière
+        function supprimerFiliere(filiereId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette filière ?')) {
+                fetch(`/supprimer-filiere/${filiereId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Erreur: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erreur lors de la suppression');
+                });
+            }
+        }
+
+        // Supprimer un niveau
+        function supprimerNiveau(niveauId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce niveau ?')) {
+                fetch(`/supprimer-niveau/${niveauId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Erreur: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Erreur lors de la suppression');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

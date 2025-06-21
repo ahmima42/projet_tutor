@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENSAKH - Tableau de Bord Étudiant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary-color: #64748b;
+            --light-gray: #f8fafc;
+            --sidebar-width: 250px;
+        }
+
+        /* ... (garder les styles existants) ... */
+
+        .data-source {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .api-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+
+        .api-status .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .api-status.connected .dot {
+            background-color: #10b981;
+        }
+
+        .api-status.disconnected .dot {
+            background-color: #ef4444;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar (identique) -->
+    <div class="sidebar">
+        <!-- ... (contenu sidebar inchangé) ... -->
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header avec statut API -->
+        <div class="header">
+            <h4>Tableau de Bord <small id="apiStatusText" class="text-muted"></small></h4>
+            <div class="user-info">
+                <img id="userAvatar" src="" alt="User">
+                <span id="userName">Chargement...</span>
+            </div>
+        </div>
+
+        <!-- Stats Cards avec source données -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card stats-card">
+                    <i class="fas fa-book-open"></i>
+                    <h3 id="modulesCount">-</h3>
+                    <p>Modules</p>
+                    <div class="data-source" id="modulesSource">Source: backend</div>
+                </div>
+            </div>
+            <!-- ... (autres cartes stats avec même structure) ... -->
+        </div>
+
+        <!-- Charts Row avec indicateurs de chargement -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Progression académique <span id="progressChartStatus"></span></h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="progressChart"></canvas>
+                            <div id="progressChartLoading" class="loading">
+                                <span class="loading-spinner"></span> Chargement des données depuis l'API...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ... (autre graphique avec même structure) ... -->
+        </div>
+
+        <!-- ... (reste du contenu inchangé) ... -->
+
+        <!-- Indicateur de statut API -->
+        <div id="apiStatusIndicator" class="api-status">
+            <span class="dot"></span>
+            <span>Connexion API</span>
+        </div>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Configuration de l'API Backend - plus visible
+        const API_BASE_URL = 'http://localhost:3000/api';
+        const STUDENT_ID = '12345';
+        
+        // Afficher clairement la configuration
+        console.group('Configuration API');
+        console.log('📡 Endpoint:', API_BASE_URL);
+        console.log('👨‍🎓 Student ID:', STUDENT_ID);
+        console.groupEnd();
+
+        // Fonction pour mettre à jour le statut API
+        function updateApiStatus(connected, message = '') {
+            const indicator = document.getElementById('apiStatusIndicator');
+            const statusText = document.getElementById('apiStatusText');
+            
+            if (connected) {
+                indicator.classList.add('connected');
+                indicator.classList.remove('disconnected');
+                statusText.textContent = 'Connecté au backend';
+                statusText.innerHTML = '<i class="fas fa-check-circle text-success"></i> Connecté au backend';
+            } else {
+                indicator.classList.add('disconnected');
+                indicator.classList.remove('connected');
+                statusText.innerHTML = '<i class="fas fa-exclamation-circle text-danger"></i> Hors ligne';
+            }
+            
+            if (message) {
+                showToast(message, connected ? 'success' : 'danger');
+            }
+        }
+
+        // Fonction pour afficher des notifications
+        function showToast(message, type = 'info') {
+            // Implémentation simple d'un toast
+            const toast = document.createElement('div');
+            toast.className = `toast show align-items-center text-white bg-${type} border-0`;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = '1100';
+            
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Modifier la fonction apiRequest pour afficher le statut
+        async function apiRequest(endpoint) {
+            const loadingElement = document.querySelector(`[data-endpoint="${endpoint}"] .loading`);
+            if (loadingElement) {
+                loadingElement.style.display = 'block';
+            }
+            
+            try {
+                console.log(`🔽 Requête API: ${endpoint}`);
+                const startTime = performance.now();
+                
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken') || 'demo-token'}`
+                    }
+                });
+                
+                const duration = (performance.now() - startTime).toFixed(0);
+                console.log(`🔼 Réponse API (${duration}ms): ${endpoint}`, response);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                updateApiStatus(true, `Données reçues de ${endpoint}`);
+                return data;
+            } catch (error) {
+                console.error(`❌ Erreur API (${endpoint}):`, error);
+                updateApiStatus(false, `Erreur de connexion à ${endpoint}`);
+                throw error;
+            } finally {
+                if (loadingElement) {
+                    loadingElement.style.display = 'none';
+                }
+            }
+        }
+
+        // Ajouter des indicateurs de chargement dans les fonctions de chargement
+        async function loadProgressChart() {
+            try {
+                const statusElement = document.getElementById('progressChartStatus');
+                statusElement.innerHTML = '<span class="loading-spinner"></span> Chargement...';
+                
+                const data = await apiRequest(`/students/${STUDENT_ID}/progress`);
+                
+                statusElement.innerHTML = '<i class="fas fa-check-circle text-success"></i> Données chargées';
+                
+                // ... (reste du code inchangé) ...
+            } catch (error) {
+                document.getElementById('progressChartStatus').innerHTML = 
+                    '<i class="fas fa-times-circle text-danger"></i> Erreur de chargement';
+                // ... (gestion erreur) ...
+            }
+        }
+
+        // Initialisation avec plus de feedback
+        async function initializePage() {
+            console.group('Initialisation du dashboard');
+            
+            // Test de connexion API initial
+            try {
+                const testResponse = await fetch(API_BASE_URL + '/health');
+                if (testResponse.ok) {
+                    updateApiStatus(true, 'Connecté au backend');
+                } else {
+                    updateApiStatus(false, 'Backend indisponible');
+                }
+            } catch (e) {
+                updateApiStatus(false, 'Impossible de joindre le backend');
+            }
+            
+            // Charger les données avec plus de feedback
+            await Promise.allSettled([
+                loadStudentInfo().catch(e => console.error('Erreur info étudiant:', e)),
+                loadDashboardStats().catch(e => console.error('Erreur stats:', e)),
+                loadRecentGrades().catch(e => console.error('Erreur notes:', e)),
+                loadUpcomingEvents().catch(e => console.error('Erreur événements:', e)),
+                loadProgressChart().catch(e => console.error('Erreur graphique progression:', e)),
+                loadGradesChart().catch(e => console.error('Erreur graphique notes:', e))
+            ]);
+            
+            console.groupEnd();
+            
+            // Afficher un résumé
+            showToast('Dashboard initialisé avec les données du backend', 'success');
+        }
+
+        // ... (reste du code inchangé) ...
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+    "username": "prof1@ensakh.ma",
+    "password": "prof123",
+    "user_type": "teacher"
+}

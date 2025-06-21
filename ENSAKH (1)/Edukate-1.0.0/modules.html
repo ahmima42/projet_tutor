@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENSAKH - Mes Modules</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary-color: #64748b;
+            --light-gray: #f8fafc;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-header h3 i {
+            margin-right: 10px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li a {
+            display: block;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 3px solid white;
+        }
+
+        .sidebar-menu li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0 !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .module-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .module-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-right: 15px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+        }
+
+        .module-info {
+            flex: 1;
+        }
+
+        .module-info h5 {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .module-info p {
+            margin: 5px 0 0;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .module-actions a {
+            margin-left: 10px;
+            color: var(--secondary-color);
+            transition: color 0.3s;
+        }
+
+        .module-actions a:hover {
+            color: var(--primary-color);
+        }
+
+        .badge-primary {
+            background-color: var(--primary-color);
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: var(--light-gray);
+            border-top: none;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -250px;
+            }
+            .sidebar.active {
+                margin-left: 0;
+            }
+            .main-content {
+                width: 100%;
+                margin-left: 0;
+            }
+            .main-content.active {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-graduation-cap"></i>ENSAKH</h3>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="professeur.html"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+                <li><a href="modules.html" class="active"><i class="fas fa-book"></i> Mes Modules</a></li>
+                <li><a href="etudiant.html"><i class="fas fa-users"></i> Étudiants</a></li>
+                <li><a href="emploi.html"><i class="fas fa-calendar-alt"></i> Emploi du temps</a></li>
+                <li><a href="login.html"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h4>Mes Modules</h4>
+            <div class="user-info">
+                <img src="https://ui-avatars.com/api/?name=Prof+Demo&background=3b82f6&color=fff" alt="User">
+                <span>Professeur Demo</span>
+            </div>
+        </div>
+
+       <!-- Module List -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Modules enseignés</h5>
+            </div>
+            <div class="card-body">
+                {% for module in modules %}
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="module-info">
+                        <h5>{{ module.nom }}</h5>
+                        <p>Filière: {{ module.filiere.nom }} | Niveau: {{ module.niveau.nom }} | Semestre: {{ module.niveau.code }}</p>
+                    </div>
+                    <div class="module-actions">
+                        <a href="#" title="Éditer"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'details_module' module.id %}" title="Voir détails"><i class="fas fa-eye"></i></a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="alert alert-info">
+                    Vous n'enseignez aucun module pour le moment.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Statistiques des modules</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary rounded p-2 mr-3">
+                        <i class="fas fa-book-open text-white"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0">Modules enseignés</p>
+                        <h4 class="mb-0">{{ nombre_modules }}</h4>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-success rounded p-2 mr-3">
+                        <i class="fas fa-users text-white"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0">Étudiants total</p>
+                        <h4 class="mb-0">{{ total_etudiants }}</h4>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning rounded p-2 mr-3">
+                        <i class="fas fa-clipboard-check text-white"></i>
+                    </div>
+                    <div>
+                        <p class="mb-0">Notes à saisir</p>
+                        <h4 class="mb-0">{{ notes_a_saisir }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Prochaines séances</h5>
+            </div>
+            <div class="card-body">
+                {% for seance in prochaines_seances %}
+                <div class="mb-3">
+                    <h6 class="d-flex justify-content-between">
+                        <span>{{ seance.module.nom }}</span>
+                        <small class="text-muted">{{ seance.date|date:"d/m" }}</small>
+                    </h6>
+                    <p class="mb-1">{{ seance.heure_debut|time:"H:i" }} - {{ seance.heure_fin|time:"H:i" }} | Salle {{ seance.salle }}</p>
+                    <small class="text-muted">{{ seance.get_type_seance_display }}: {{ seance.sujet }}</small>
+                </div>
+                {% empty %}
+                <div class="alert alert-info">
+                    Aucune séance prévue prochainement.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

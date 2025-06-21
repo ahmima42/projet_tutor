@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>ENSAKH - Connexion</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Page de connexion ENSAKH" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-gray: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            min-height: 600px;
+            display: flex;
+        }
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            padding: 60px 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .brand-logo i {
+            font-size: 2.5rem;
+            margin-right: 15px;
+        }
+
+        .brand-logo h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .welcome-text {
+            z-index: 2;
+            position: relative;
+        }
+
+        .welcome-text h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .welcome-text p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .login-right {
+            flex: 1;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header h3 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: var(--secondary-color);
+            font-size: 1rem;
+        }
+
+        .user-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--light-gray);
+            padding: 6px;
+            border-radius: 12px;
+        }
+
+        .user-type-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .user-type-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: white;
+        }
+
+        .form-group i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .form-group.has-label i {
+            top: calc(50% + 12px);
+        }
+
+        .password-toggle {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary-color);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+
+        .remember-me label {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: var(--primary-dark);
+            text-decoration: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 20px;
+        }
+
+        .back-to-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-to-home a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-home a:hover {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 450px;
+                margin: 20px;
+            }
+
+            .login-left {
+                padding: 40px 30px;
+                text-align: center;
+            }
+
+            .login-right {
+                padding: 40px 30px;
+            }
+
+            .brand-logo h1 {
+                font-size: 1.8rem;
+            }
+
+            .welcome-text h2 {
+                font-size: 1.6rem;
+            }
+
+            .user-type-selector {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+
+        .loading {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: none;
+            font-size: 0.9rem;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: #dc2626;
+            border-left: 4px solid #dc2626;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border-left: 4px solid #16a34a;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <!-- Left Side - Branding -->
+        <div class="login-left">
+            <div class="brand-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <h1>ENSAKH</h1>
+            </div>
+            <div class="welcome-text">
+                <h2>Bienvenue sur votre plateforme de suivi</h2>
+                <p>Accédez à votre espace personnel pour consulter vos performances, gérer vos cours et suivre votre progression académique en temps réel.</p>
+            </div>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="login-right">
+            <div class="login-header">
+                <h3>Connexion</h3>
+                <p>Connectez-vous à votre espace</p>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <form id="loginForm">
+                <!-- User Type Selector -->
+                <div class="user-type-selector">
+                    <button type="button" class="user-type-btn active" data-type="student">
+                        <i class="fas fa-user-graduate"></i>
+                        Étudiant
+                    </button>
+                    <button type="button" class="user-type-btn" data-type="teacher">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        Professeur
+                    </button>
+                    <button type="button" class="user-type-btn" data-type="admin">
+                        <i class="fas fa-user-tie"></i>
+                        Admin
+                    </button>
+                </div>
+
+                <!-- Email/Username Field -->
+                <div class="form-group has-label">
+                    <label for="username">Identifiant</label>
+                    <input type="text" id="username" class="form-control" placeholder="Votre numéro étudiant ou email" required>
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group has-label">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" class="form-control" placeholder="Votre mot de passe" required>
+                    <i class="fas fa-eye password-toggle" onclick="togglePassword()"></i>
+                </div>
+
+                <!-- Remember me and Forgot password -->
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Se souvenir de moi</label>
+                    </div>
+                    <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+                </div>
+                
+                <!-- Login Button -->
+                <button type="submit" class="btn-login">
+                    <div class="loading"></div>
+                    <span class="btn-text">Se connecter</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>ou</span>
+            </div>
+
+            <div class="back-to-home">
+                <a href="index.html">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour à l'accueil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // User type selection
+        document.querySelectorAll('.user-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update placeholder based on user type
+                const userType = this.dataset.type;
+                const usernameField = document.getElementById('username');
+                
+                switch(userType) {
+                    case 'student':
+                        usernameField.placeholder = 'Votre numéro étudiant ou email';
+                        break;
+                    case 'teacher':
+                        usernameField.placeholder = 'Votre email professionnel';
+                        break;
+                    case 'admin':
+                        usernameField.placeholder = 'Votre identifiant administrateur';
+                        break;
+                }
+            });
+        });
+
+        // Password visibility toggle
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.querySelector('.password-toggle');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Valid credentials for each user type
+        const validCredentials = {
+            student: [
+                { username: 'E12345', password: 'etudiant123', name: 'Ahmed Ali' },
+                { username: 'E67890', password: 'etudiant123', name: 'Fatima Zahra' },
+                { username: 'etudiant@ensakh.ma', password: 'etudiant123', name: 'Mohammed Amine' }
+            ],
+            teacher: [
+                { username: 'prof1@ensakh.ma', password: 'prof123', name: 'Professeur Demo' },
+                { username: 'prof2@ensakh.ma', password: 'prof123', name: 'Prof. Fatima Z.' }
+            ],
+            admin: [
+                { username: 'admin', password: 'admin123', name: 'Administrateur Demo' }
+            ]
+        };
+
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const button = document.querySelector('.btn-login');
+            const loading = document.querySelector('.loading');
+            const btnText = document.querySelector('.btn-text');
+            const arrow = button.querySelector('.fa-arrow-right');
+            
+            // Show loading state
+            loading.style.display = 'block';
+            btnText.textContent = 'Connexion...';
+            arrow.style.display = 'none';
+            button.disabled = true;
+            
+            // Get form data
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const userType = document.querySelector('.user-type-btn.active').dataset.type;
+            const remember = document.getElementById('remember').checked;
+            
+            // Simulate login process
+            setTimeout(() => {
+                // Reset button state
+                loading.style.display = 'none';
+                btnText.textContent = 'Se connecter';
+                arrow.style.display = 'block';
+                button.disabled = false;
+                
+                // Check credentials
+                const user = validCredentials[userType].find(
+                    cred => cred.username === username && cred.password === password
+                );
+                
+                if (user) {
+                    showAlert('Connexion réussie ! Redirection en cours...', 'success');
+                    
+                    // Store user info in sessionStorage
+                    sessionStorage.setItem('currentUser', JSON.stringify({
+                        type: userType,
+                        name: user.name,
+                        username: user.username,
+                        remember: remember
+                    }));
+                    
+                    setTimeout(() => {
+                        // Redirect based on user type
+                        switch(userType) {
+                            case 'student':
+                                window.location.href = 'dashstud.html';
+                                break;
+                            case 'teacher':
+                                window.location.href = 'professeur.html';
+                                break;
+                            case 'admin':
+                                window.location.href = 'administrateur.html';
+                                break;
+                        }
+                    }, 1500);
+                } else {
+                    showAlert('Identifiant ou mot de passe incorrect.', 'danger');
+                }
+            }, 1000);
+        });
+
+        // Show alert function
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} mr-2"></i>
+                ${message}
+            `;
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Input field focus effects
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    </script>
+</body>
+</html>

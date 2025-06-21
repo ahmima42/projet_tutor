@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENSAKH - Gestion des Modules</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary-color: #64748b;
+            --light-gray: #f8fafc;
+            --sidebar-width: 250px;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-header h3 i {
+            margin-right: 10px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li a {
+            display: block;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 3px solid white;
+        }
+
+        .sidebar-menu li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0 !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 8px;
+            padding: 6px 12px;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: var(--light-gray);
+            border-top: none;
+            font-weight: 600;
+            color: var(--secondary-color);
+            padding: 15px;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .badge-primary {
+            background-color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .badge-success {
+            background-color: var(--success-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .badge-warning {
+            background-color: var(--warning-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            padding: 10px 15px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+
+        .search-bar {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-bar .fas {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+        }
+
+        .search-bar input {
+            padding-left: 45px;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: -250px;
+            }
+            .sidebar.active {
+                margin-left: 0;
+            }
+            .main-content {
+                width: 100%;
+                margin-left: 0;
+            }
+            .main-content.active {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-graduation-cap"></i>ENSAKH</h3>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="administrateur.html" class="active"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+
+                <li><a href="gestionmodule.html"><i class="fas fa-book"></i> Gestion des modules</a></li>
+                <li><a href="filiere.html"><i class="fas fa-layer-group"></i> Filières & Niveaux</a></li>
+                <li><a href="statistique.html"><i class="fas fa-chart-bar"></i> Statistiques</a></li>
+                <li><a href="index.html"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h4>Gestion des Modules</h4>
+            <div class="user-info">
+                <img src="https://ui-avatars.com/api/?name=Admin+Demo&background=3b82f6&color=fff" alt="User">
+                <span>Administrateur Demo</span>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="form-control" placeholder="Rechercher un module..." id="searchInput">
+                </div>
+            </div>
+            <div class="col-md-4 text-right">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#addModuleModal">
+                    <i class="fas fa-plus"></i> Ajouter Module
+                </button>
+            </div>
+        </div>
+
+        <!-- Modules Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Liste des Modules</h5>
+                
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table" id="modulesTable">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Nom du Module</th>
+                                <th>Filière</th>
+                                <th>Niveau</th>
+                                <th>Crédits</th>
+                                <th>Enseignant</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>INF101</strong></td>
+                                <td>Programmation Orientée Objet</td>
+                                <td><span class="badge badge-primary">GI</span></td>
+                                <td>S3</td>
+                                <td>4</td>
+                                <td>Prof. Ahmed Bennani</td>
+                                <td><span class="badge badge-success">Actif</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-outline-primary btn-sm" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm" title="Détails">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>MAT201</strong></td>
+                                <td>Mathématiques Appliquées</td>
+                                <td><span class="badge badge-warning">GE</span></td>
+                                <td>S4</td>
+                                <td>3</td>
+                                <td>Prof. Fatima Zahra</td>
+                                <td><span class="badge badge-success">Actif</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-outline-primary btn-sm" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm" title="Détails">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>MNG301</strong></td>
+                                <td>Gestion de Projet</td>
+                                <td><span class="badge badge-success">TM</span></td>
+                                <td>S5</td>
+                                <td>5</td>
+                                <td>Prof. Omar Alami</td>
+                                <td><span class="badge badge-warning">En pause</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-outline-primary btn-sm" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm" title="Détails">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>GC401</strong></td>
+                                <td>Résistance des Matériaux</td>
+                                <td><span class="badge badge-info">GC</span></td>
+                                <td>S6</td>
+                                <td>4</td>
+                                <td>Prof. Youssef Amrani</td>
+                                <td><span class="badge badge-success">Actif</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-outline-primary btn-sm" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm" title="Détails">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>ENR501</strong></td>
+                                <td>Énergies Renouvelables</td>
+                                <td><span class="badge badge-secondary">GEM</span></td>
+                                <td>S7</td>
+                                <td>6</td>
+                                <td>Prof. Aicha Benali</td>
+                                <td><span class="badge badge-success">Actif</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-outline-primary btn-sm" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm" title="Détails">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Navigation pages">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Add Module Modal -->
+    <div class="modal fade" id="addModuleModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter un Nouveau Module</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="addModuleForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Code du Module</label>
+                                    <input type="text" class="form-control" placeholder="Ex: INF102" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Nom du Module</label>
+                                    <input type="text" class="form-control" placeholder="Nom complet du module" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Filière</label>
+                                    <select class="form-control" required>
+                                        <option value="">Sélectionner...</option>
+                                        <option value="GI">Génie Informatique</option>
+                                        <option value="GE">Génie Électrique</option>
+                                        <option value="TM">Techniques de Management</option>
+                                        <option value="GC">Génie Civil</option>
+                                        <option value="GEM">Génie Énergétique</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Niveau</label>
+                                    <select class="form-control" required>
+                                        <option value="">Sélectionner...</option>
+                                        <option value="S1">Semestre 1</option>
+                                        <option value="S2">Semestre 2</option>
+                                        <option value="S3">Semestre 3</option>
+                                        <option value="S4">Semestre 4</option>
+                                        <option value="S5">Semestre 5</option>
+                                        <option value="S6">Semestre 6</option>
+                                        <option value="S7">Semestre 7</option>
+                                        <option value="S8">Semestre 8</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Crédits</label>
+                                    <input type="number" class="form-control" min="1" max="10" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Enseignant Responsable</label>
+                            <select class="form-control" required>
+                                <option value="">Sélectionner un enseignant...</option>
+                                <option value="prof1">Prof. Ahmed Bennani</option>
+                                <option value="prof2">Prof. Fatima Zahra</option>
+                                <option value="prof3">Prof. Omar Alami</option>
+                                <option value="prof4">Prof. Youssef Amrani</option>
+                                <option value="prof5">Prof. Aicha Benali</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea class="form-control" rows="3" placeholder="Description du module..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary">Ajouter Module</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#modulesTable tbody tr');
+            
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Filter by filière
+        document.getElementById('filterFiliere').addEventListener('change', function() {
+            const filterValue = this.value;
+            const tableRows = document.querySelectorAll('#modulesTable tbody tr');
+            
+            tableRows.forEach(row => {
+                if (filterValue === '') {
+                    row.style.display = '';
+                } else {
+                    const filiereCell = row.querySelector('.badge');
+                    if (filiereCell && filiereCell.textContent === filterValue) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // Add module form submission
+        document.querySelector('#addModuleModal .btn-primary').addEventListener('click', function() {
+            // Here you would typically send data to server
+            alert('Module ajouté avec succès!');
+            $('#addModuleModal').modal('hide');
+        });
+    </script>
+</body>
+</html>
